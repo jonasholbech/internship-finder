@@ -1,19 +1,12 @@
-import * as React from "react";
-import {
-  Routes,
-  Route,
-  Link,
-  useNavigate,
-  useLocation,
-  Navigate,
-  Outlet,
-} from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
 import { AuthProvider } from "./contexts/auth";
-import Layout from "./Layout";
+import Layout from "./Layout/Layout";
 import Home from "./pages/Home";
 import Reviews from "./pages/Reviews";
+import AddReview from "./pages/AddReview";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -30,10 +23,26 @@ export default function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route
-            path="/protected"
+            path="/reviews"
             element={
               <RequireAuth>
                 <Reviews />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/add-review"
+            element={
+              <RequireAuth>
+                <AddReview />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <Profile />
               </RequireAuth>
             }
           />

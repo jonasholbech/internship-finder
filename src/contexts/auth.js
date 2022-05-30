@@ -21,10 +21,8 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
-  async function signOut(callback) {
-    const { error } = await supabase.auth.signOut();
-    console.log({ error });
-    callback();
+  async function signOut() {
+    /* const { error } =  */ await supabase.auth.signOut();
   }
   const ex = { auth, signInWithGithub, signOut };
   return <AuthContext.Provider value={ex}>{children}</AuthContext.Provider>;

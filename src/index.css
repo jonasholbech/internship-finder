@@ -14,3 +14,59 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+.NavBar {
+  padding-right: 1rem;
+}
+.Login h1 {
+  text-align: center;
+}
+.Login p {
+  max-width: 52ch;
+  margin: auto;
+  padding-top: 1rem;
+}
+.Login .main {
+  display: flex;
+  margin: 3rem;
+  justify-content: center;
+}
+.Login .ghButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.Home {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.Home .reviews,
+.Home .favourites {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.Home .reviews h2,
+.Home .favourites h2,
+.Home .full {
+  grid-column: 1/-1;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.form-control {
+  display: flex;
+  flex-direction: column;
+}
+.error {
+  color: red;
+}
+main {
+  margin: 2rem;
+}
+.Reviews .rs-table-row {
+  cursor: pointer;
+}
