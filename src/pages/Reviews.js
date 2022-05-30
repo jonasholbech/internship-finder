@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Table, Modal, Button } from "rsuite";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { supabase } from "../contexts/auth";
 import useAuth from "../hooks/useAuth";
@@ -25,6 +26,28 @@ const DescriptionModal = ({ open, handleClose, name, description }) => {
     </div>
   );
 };
+const FavCell = ({ rowData, dataKey, setForceLoad, ...props }) => {
+  let { auth } = useAuth();
+  async function click(e) {
+    e.stopPropagation();
+    if (rowData.fav) {
+      /* const { data, error } =  */ await supabase
+        .from("favourites")
+        .delete()
+        .match({ company_id: rowData.company_id });
+    } else {
+      /* let { data, error } =  */ await supabase
+        .from("favourites")
+        .insert({ company_id: rowData.company_id, user_id: auth.user.id });
+    }
+    setForceLoad(Date.now());
+  }
+  return (
+    <Cell {...props} onClick={click}>
+      {rowData.fav ? <AiFillHeart /> : <AiOutlineHeart />}
+    </Cell>
+  );
+};
 function Reviews() {
   const [loading, setLoading] = useState(false);
   const [internships, setInternships] = useState([]);
@@ -33,13 +56,14 @@ function Reviews() {
   const [open, setOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalBody, setModalBody] = useState("");
+  const [forceLoad, setForceLoad] = useState(Date.now());
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   let { auth } = useAuth();
   useEffect(() => {
     getReviews();
-  }, [auth.auth]);
+  }, [auth.auth, forceLoad]);
   const getData = () => {
     if (sortColumn && sortType) {
       return internships.sort((a, b) => {
@@ -69,7 +93,7 @@ function Reviews() {
       setLoading(true);
       let { data, error, status } = await supabase.from("internships").select(
         `id, rating, ended, description, companies (
-          name
+          name, id, favourites (id)
         )`
       );
 
@@ -83,6 +107,8 @@ function Reviews() {
           ended: item.ended.slice(0, 7),
           name: item.companies.name,
           short: item.description.slice(0, 50) + "...",
+          fav: item.companies.favourites.length > 0,
+          company_id: item.companies.id,
         }));
         setInternships(next);
       }
@@ -92,7 +118,7 @@ function Reviews() {
       setLoading(false);
     }
   };
-  //TODO: read table docs,. modal on click with full description
+  //TODO: read table docs
   return (
     <div className="Reviews">
       <DescriptionModal
@@ -121,6 +147,11 @@ function Reviews() {
             handleOpen();
           }}
         >
+          <Column width={50} sortable>
+            <HeaderCell>Favourite</HeaderCell>
+            <FavCell setForceLoad={setForceLoad} dataKey="fav" />
+          </Column>
+
           <Column width={130} sortable>
             <HeaderCell>Company</HeaderCell>
             <Cell dataKey="name" />

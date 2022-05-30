@@ -2,6 +2,5 @@
 
 ## TODO:
 
-- add to favs
 - comments?
--
+- lots of UX work
