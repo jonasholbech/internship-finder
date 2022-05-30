@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   InputPicker,
+  AutoComplete,
   DatePicker,
   Rate,
   Input,
@@ -31,11 +32,11 @@ function AddReview() {
   async function add(e) {
     e.preventDefault();
     let error = false;
+
     if (!company) {
       setCompanyError("Please select a company");
       error = true;
     }
-
     if (!end) {
       setEndError("Please select an end date");
       error = true;
@@ -49,29 +50,24 @@ function AddReview() {
       error = true;
     }
 
-    //if input picket vaslue is not numeric, it's a new company
     if (!error) {
       let company_id = company;
-      //TODO reverse logic, look up name first, then create it
-      if (!Number.isInteger(company)) {
-        const { data, error } = await supabase
+
+      const { data } = await supabase
+        .from("companies")
+        .select("id")
+        .eq("name", company);
+      if (data.length === 0) {
+        const { data } = await supabase
           .from("companies")
           .insert({ user_id: auth.user.id, name: company });
-        if (data) {
-          company_id = data[0].id;
-        }
-
-        if (error?.code === "23505") {
-          //duplicate entry
-          const { data } = await supabase
-            .from("companies")
-            .select("id")
-            .eq("name", company);
-          company_id = data[0].id;
-          console.log("duplicate entry, found new id:", data);
-        }
+        company_id = data[0].id;
+      } else {
+        company_id = data[0].id;
       }
-      /* const { data, error } =  */ await supabase.from("internships").insert([
+
+      /* const { data, error } =  */
+      await supabase.from("internships").insert([
         {
           user_id: auth.user.id,
           ended: end,
@@ -82,8 +78,8 @@ function AddReview() {
       ]);
       //TODO: error handling on insert
       toaster.push(message);
-      setCompany("");
       setCompanyError(null);
+      setCompany("");
       setEnd(null);
       setEndError(null);
       setRating(0);
@@ -106,14 +102,11 @@ function AddReview() {
       <form onSubmit={add}>
         <div className="form-control">
           <label htmlFor="form_company">Company</label>
-          <InputPicker
-            creatable
-            id="form_company"
+          <AutoComplete
+            data={companies.map((c) => c.name)}
             value={company}
             onChange={setCompany}
             onFocus={() => setCompanyError(null)}
-            data={companies.map((c) => ({ label: c.name, value: c.id }))}
-            style={{ width: 224 }}
           />
           {companyError && <p className="error">{companyError}</p>}
         </div>
@@ -138,7 +131,7 @@ function AddReview() {
             id="form_rating"
             value={rating}
             onChange={setRating}
-            /* defaultValue={0} */ color="blue"
+            color="blue"
             onFocus={() => setRatingError(null)}
           />
           {ratingError && <p className="error">{ratingError}</p>}
