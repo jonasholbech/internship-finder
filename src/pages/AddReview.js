@@ -30,7 +30,6 @@ function AddReview() {
 
   async function add(e) {
     e.preventDefault();
-    /* console.log({ company, end, rating, description }); */
     let error = false;
     if (!company) {
       setCompanyError("Please select a company");
@@ -53,11 +52,24 @@ function AddReview() {
     //if input picket vaslue is not numeric, it's a new company
     if (!error) {
       let company_id = company;
+      //TODO reverse logic, look up name first, then create it
       if (!Number.isInteger(company)) {
-        const { data /* , error */ } = await supabase
+        const { data, error } = await supabase
           .from("companies")
           .insert({ user_id: auth.user.id, name: company });
-        company_id = data[0].id;
+        if (data) {
+          company_id = data[0].id;
+        }
+
+        if (error?.code === "23505") {
+          //duplicate entry
+          const { data } = await supabase
+            .from("companies")
+            .select("id")
+            .eq("name", company);
+          company_id = data[0].id;
+          console.log("duplicate entry, found new id:", data);
+        }
       }
       /* const { data, error } =  */ await supabase.from("internships").insert([
         {
@@ -95,11 +107,11 @@ function AddReview() {
         <div className="form-control">
           <label htmlFor="form_company">Company</label>
           <InputPicker
+            creatable
             id="form_company"
             value={company}
             onChange={setCompany}
             onFocus={() => setCompanyError(null)}
-            creatable
             data={companies.map((c) => ({ label: c.name, value: c.id }))}
             style={{ width: 224 }}
           />
