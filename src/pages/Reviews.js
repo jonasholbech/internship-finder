@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Table, Modal, Button } from "rsuite";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { BsHeartHalf } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import sortBy from "just-sort-by";
 import { supabase } from "../contexts/auth";
@@ -110,7 +111,7 @@ function Reviews() {
   };
   //TODO: read table docs
   return (
-    <div className="Reviews">
+    <div className="Reviews  fullbleed">
       <DescriptionModal
         open={open}
         handleClose={handleClose}
@@ -138,12 +139,14 @@ function Reviews() {
             handleOpen();
           }}
         >
-          <Column width={50} sortable>
-            <HeaderCell>Favourite</HeaderCell>
+          <Column width={60} sortable>
+            <HeaderCell>
+              <BsHeartHalf />
+            </HeaderCell>
             <FavCell setForceLoad={setForceLoad} dataKey="fav" />
           </Column>
 
-          <Column width={130} sortable>
+          <Column sortable>
             <HeaderCell>Company</HeaderCell>
             <Cell dataKey="name" />
           </Column>

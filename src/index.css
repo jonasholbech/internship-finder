@@ -65,7 +65,21 @@ form {
   color: red;
 }
 main {
-  margin: 2rem;
+  display: grid;
+  margin-top: 2rem;
+  grid-template-columns: 2rem 1fr 2rem;
+}
+main > * {
+  grid-column: 2;
+}
+main .fullbleed {
+  grid-column: 1/-1;
+}
+.Reviews.fullbleed {
+  padding: 0.5rem;
+}
+.Reviews.fullbleed h2 {
+  margin-left: 1.5rem;
 }
 .Reviews .rs-table-row {
   cursor: pointer;
