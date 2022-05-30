@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Table, Modal, Button } from "rsuite";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import sortBy from "just-sort-by";
 import { supabase } from "../contexts/auth";
 import useAuth from "../hooks/useAuth";
 const Column = Table.Column;
@@ -66,21 +67,11 @@ function Reviews() {
   }, [auth.auth, forceLoad]);
   const getData = () => {
     if (sortColumn && sortType) {
-      return internships.sort((a, b) => {
-        let x = a[sortColumn];
-        let y = b[sortColumn];
-        if (typeof x === "string") {
-          x = x.charCodeAt();
-        }
-        if (typeof y === "string") {
-          y = y.charCodeAt();
-        }
-        if (sortType === "asc") {
-          return x - y;
-        } else {
-          return y - x;
-        }
-      });
+      const sorted = sortBy(internships, sortColumn);
+      if (sortType !== "asc") {
+        sorted.reverse();
+      }
+      return sorted;
     }
     return internships;
   };
@@ -106,7 +97,6 @@ function Reviews() {
           ...item,
           ended: item.ended.slice(0, 7),
           name: item.companies.name,
-          short: item.description.slice(0, 50) + "...",
           fav: item.companies.favourites.length > 0,
           company_id: item.companies.id,
         }));
@@ -141,6 +131,7 @@ function Reviews() {
           sortType={sortType}
           onSortColumn={handleSortColumn}
           loading={loading}
+          autoHeight={true}
           onRowClick={(data) => {
             setModalTitle(data.name);
             setModalBody(data.description);
@@ -167,9 +158,9 @@ function Reviews() {
             <Cell dataKey="ended" />
           </Column>
 
-          <Column width={200}>
+          <Column width={200} className="description-col">
             <HeaderCell>Description</HeaderCell>
-            <Cell dataKey="short" />
+            <Cell dataKey="description" />
           </Column>
         </Table>
       </section>
