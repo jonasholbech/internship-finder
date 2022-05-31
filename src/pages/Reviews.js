@@ -9,7 +9,13 @@ import useAuth from "../hooks/useAuth";
 const Column = Table.Column;
 const HeaderCell = Table.HeaderCell;
 const Cell = Table.Cell;
-const DescriptionModal = ({ open, handleClose, name, description }) => {
+const DescriptionModal = ({
+  open,
+  handleClose,
+  name,
+  description,
+  related,
+}) => {
   return (
     <div className="modal-container">
       <Modal open={open} onClose={handleClose}>
@@ -17,7 +23,10 @@ const DescriptionModal = ({ open, handleClose, name, description }) => {
           <Modal.Title>{name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <h2>Description</h2>
           <p>{description}</p>
+          <h2>Tasks</h2>
+          <p>{related}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleClose} appearance="primary">
@@ -58,6 +67,7 @@ function Reviews() {
   const [open, setOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalBody, setModalBody] = useState("");
+  const [modalRelated, setModalRelated] = useState("");
   const [forceLoad, setForceLoad] = useState(Date.now());
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -84,7 +94,7 @@ function Reviews() {
     try {
       setLoading(true);
       let { data, error, status } = await supabase.from("internships").select(
-        `id, rating, ended, description, companies (
+        `id, rating, ended, description, related, companies (
           name, id, favourites (id)
         )`
       );
@@ -136,6 +146,7 @@ function Reviews() {
           onRowClick={(data) => {
             setModalTitle(data.name);
             setModalBody(data.description);
+            setModalRelated(data.related);
             handleOpen();
           }}
         >
@@ -162,8 +173,8 @@ function Reviews() {
           </Column>
 
           <Column width={200} className="description-col">
-            <HeaderCell>Description</HeaderCell>
-            <Cell dataKey="description" />
+            <HeaderCell>Tasks</HeaderCell>
+            <Cell dataKey="related" />
           </Column>
         </Table>
       </section>
