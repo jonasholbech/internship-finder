@@ -127,6 +127,7 @@ function Reviews() {
         handleClose={handleClose}
         name={modalTitle}
         description={modalBody}
+        related={modalRelated}
       />
       <section className="reviews">
         <h2>All Reviews</h2>
