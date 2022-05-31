@@ -27,6 +27,8 @@ function AddReview() {
   const [ratingError, setRatingError] = useState(null);
   const [description, setDescription] = useState("");
   const [descriptionError, setDescriptionError] = useState(null);
+  const [related, setRelated] = useState("");
+  const [relatedError, setRelatedError] = useState(null);
 
   async function add(e) {
     e.preventDefault();
@@ -46,6 +48,12 @@ function AddReview() {
     }
     if (!description) {
       setDescriptionError("Please add a description");
+      error = true;
+    }
+    if (!related) {
+      setRelatedError(
+        "Please add some of the frontend related things you worked with"
+      );
       error = true;
     }
 
@@ -73,6 +81,7 @@ function AddReview() {
           rating,
           company_id: company_id,
           description,
+          related,
         },
       ]);
       //TODO: error handling on insert
@@ -85,6 +94,8 @@ function AddReview() {
       setRatingError(null);
       setDescription("");
       setDescriptionError(null);
+      setRelated("");
+      setRelatedError(null);
     }
   }
 
@@ -147,6 +158,20 @@ function AddReview() {
             onFocus={() => setDescriptionError(null)}
           />
           {descriptionError && <p className="error">{descriptionError}</p>}
+        </div>
+
+        <div className="form-control">
+          <label htmlFor="form_related">Frontend related tasks</label>
+          <Input
+            as="textarea"
+            id="form_related"
+            rows={3}
+            value={related}
+            onChange={setRelated}
+            placeholder="JS? React? Design?"
+            onFocus={() => setRelatedError(null)}
+          />
+          {relatedError && <p className="error">{relatedError}</p>}
         </div>
 
         <Button type="submit" appearance="primary">
